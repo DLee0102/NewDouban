@@ -24,8 +24,27 @@ findIntro_hidden = re.compile(r'<span class="all hidden">(.*?)</span>', re.S)
 # 找到导演
 finddirector = re.compile(r'<a href=".*" rel="v:directedBy">(.*?)</a>')
 # 找到编剧
-# findeditors = re.compile(r'<span class="pl">编剧</span>(.*?)<br>', re.S)
-findeditor = re.compile(r'<a href="/celebrity/.*">(.*?)</a>')
+findeditors = re.compile(r'<span class="attrs">(.*?)</span>', re.S)
+findeditor = re.compile(r'<a href="/celebrity/.*">(.*)</a>')
+# 找到演员 
+findactors = re.compile(r'<span class="attrs">(.*?)</span>', re.S)
+findactor = re.compile(r'<a href=".*" rel="v:starring">(.*?)</a>', re.S)
+# 找到类型
+findclasses = re.compile(r'<span property="v:genre">(.*?)</span>', re.S)
+# 找到国家地区
+findlocation = re.compile(r'<span class="pl">制片国家/地区:</span>(.*?)<br/>', re.S)
+# 找到语言
+findlanguage = re.compile(r'<span class="pl">语言:</span>(.*?)<br/>')
+# 找到上映时间
+findtimes = re.compile(r'<span class="pl">上映日期:</span>(.*?)<br/>', re.S)
+findtime = re.compile(r'<span content=".*" property="v:initialReleaseDate">(\d{4}-\d{1,2}-\d{1,2}).*</span>', re.S)
+findtime_loc = re.compile(r'<span content=".*" property="v:initialReleaseDate">\d{4}-\d{1,2}-\d{1,2}(.*?)</span>', re.S)
+findtime_ = re.compile(r'<span content=".*" property="v:initialReleaseDate">(\d*).*</span>', re.S)
+findtime_loc_ = re.compile(r'<span content=".*" property="v:initialReleaseDate">\d*(.*?)</span>', re.S)
+# 找到片场
+findlength = re.compile(r'<span content=".*" property="v:runtime">(\d*)分钟</span>')
+# 找到又名
+findanothername = re.compile(r'<span class="pl">又名:</span>(.*?)<br/>')
 
 # 影片评分
 findRating = re.compile(r'<span class="rating_num" property="v:average">(.*)</span>')
@@ -67,7 +86,7 @@ def askURL(url):
             print(e.reason)
     return html
     
-
+# 获取数据
 def getData(link_list):
     datalist = []
     for link_ in link_list:
@@ -76,6 +95,7 @@ def getData(link_list):
         
         soup = BeautifulSoup(html, "html.parser")
         
+        # 找到电影标题
         for title in soup.find_all('span', property="v:itemreviewed"):
             title = str(title)
             
@@ -86,20 +106,69 @@ def getData(link_list):
             # print(basic)
             basic = str(basic)
             
+            # 找海报
             imgsrc = re.findall(findImgsrc, basic)[0]
             data.append(imgsrc)
             
+            # 找导演
             director = re.findall(finddirector, basic)
             data.append(director[0])
             
-            # editors = re.findall(findeditors, basic)
-            # print(editors[0])
-            editor = re.findall(findeditor, basic)
-            editor.pop()
+            # 找编剧
+            editors = re.findall(findeditors, basic)
+            editor = []
+            editors = editors[1].split(' / ')
+            # print(editors)
+            for e in editors:
+                editor.append(re.findall(findeditor, e)[0])
+            # print(editor)
             data.append(editor)
             
+            # 找演员
+            actors = re.findall(findactors, basic)
+            actor = []
+            # print(actors[2])
+            for a in actors[2].split(' / '):
+                # print(re.findall(findactor, a))
+                actor.append(re.findall(findactor, a)[0])
+            data.append(actor)
             
-        
+            # 找类型
+            classes = re.findall(findclasses, basic)
+            data.append(classes)
+            
+            # 找到国家地区
+            # print(basic)
+            location = re.findall(findlocation, basic)
+            data.append(location)
+            
+            # 找到语言
+            language = re.findall(findlanguage, basic)
+            data.append(language)
+            
+            # 找到上映时间
+            time = []
+            for t in re.findall(findtimes, basic)[0].split(" / "):
+                # print(re.findall(findtimes, basic))
+                if re.findall(findtime, t)==[]:
+                    time.append([re.findall(findtime_, t)[0], re.findall(findtime_loc_, t)[0]])  # 格式为1984（）
+                else:
+                    time.append([re.findall(findtime, t)[0], re.findall(findtime_loc, t)[0]])  # 格式为1984-8-2（）
+            data.append(time)
+            
+            # 找到片长
+            length = re.findall(findlength, basic)
+            data.append(length)
+            
+            # 找到又名
+            anothername = re.findall(findanothername, basic)
+            print(anothername)
+            
+            
+            
+            
+            
+        # 找到剧情简介
         for relatedinfo in soup.find_all('div', "related-info"):
             relatedinfo = str(relatedinfo)
             intro = re.findall(findIntro_hidden, relatedinfo)
