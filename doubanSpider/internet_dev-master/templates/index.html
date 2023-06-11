@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./static/css/style.css">
+    <title>first_page</title>
+</head>
+<body>
+<div class="box">
+        <h2>Login</h2>
+        <form id="loginForm" action="/login" method="POST">
+            <div class="input-box" >
+                <label for="username">账号: </label>
+                <input type="text" name="username" id="username">
+            </div>
+            <div class="input-box">
+                <label for="password">密码: </label>
+                <input type="password" name="password" id="password">
+            </div>
+            <div class="btn-box">
+                <input type="submit" name="submit" id="submit" value="submit" >
+            </div>
+        </form>
+        <!--
+        <form id="loginForm" action="signin.html">
+            <h3>注册</h3>
+            <input type="submit" name="register" value="register">
+        </form>
+        -->
+        <div>
+            <a href="/signin_info" target="top">注册</a>
+        </div>
+    </div>
+</body>
+</html>
