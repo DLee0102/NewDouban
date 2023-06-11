@@ -218,10 +218,30 @@
                 document.getElementById("overlay").style.display = "none";
               }
             </script>
-          <button class="my-button2" onclick="window.location.href = '/individual';">   删除收藏   </button>
+          <button class="my-button2" onclick="showOverlay2()">   删除收藏   </button>
+          <div class="overlay" id="overlay2">
+            <div class="overlay-content">
+              <!-- 在这里添加窗口内容 -->
+              <h2>删除收藏</h2>
+              <form id="add_mv2" action="/deletelike" method="POST">
+                <input type="text" name="movieid" class="overlay-input" placeholder="请输入要删除的电影编号">
+                <button class="overlay-button" type="submit" name="submit">提交</button>
+              </form>
+              <button class="overlay-button" onclick="hideOverlay2()">关闭</button>
+            </div>
+          </div>
+          <script>
+            function showOverlay2() {
+              document.getElementById("overlay2").style.display = "flex";
+            }
+            
+            function hideOverlay2() {
+              document.getElementById("overlay2").style.display = "none";
+            }
+          </script>
 
           <tr>
-            <td>排名</td>
+            <td>编号</td>
             <td>电影中文名称</td>
             <td>电影外文名称</td>
             <td>评分</td>

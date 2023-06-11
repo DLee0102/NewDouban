@@ -85,10 +85,11 @@ def signin():
 
 @app.route("/main", methods=["GET", "POST"])
 def main():
+    image_url = 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2892024245.webp'
     if not is_user_logged_in():
         return redirect(url_for("login"))
     
-    return render_template("main.html")
+    return render_template("main.html", image_url=image_url)
 
     # 这里是截取的代码，应该无用
     '''
@@ -233,9 +234,32 @@ def addlike():
         cur.close()
         con.close()
 
-        return render_template("individual.html", movies = showdatalist)
+    return render_template("individual.html", movies = showdatalist)
+
+@app.route("/deletelike", methods=["GET", "POST"])
+def deletelike():
+    if request.method == "POST":
+        mv_id = request.form.get("movieid")
+        sql_mv_id = '"' + mv_id + '"'
+        
+        datalist = []
+        conn = sqlite3.connect('individual.db')
+        cursor = conn.cursor()
+        sql = "delete from movieinfo where id = (%s)"%sql_mv_id
+        sql2 = "select * from movieinfo"
+        
+        cursor.execute(sql)
+        data = cursor.execute(sql2)
+        for item in data:
+            datalist.append(item)
+        conn.commit()
+        
+        cursor.close()
+        conn.close()
         
         
+    
+    return render_template("individual.html", movies = datalist)
     
 
 # 词云部分
